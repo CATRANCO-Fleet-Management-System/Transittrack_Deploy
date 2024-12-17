@@ -367,9 +367,6 @@ const MaintenanceManagement = () => {
         isOpen={isViewProofModalOpen}
         onClose={() => setIsViewProofModalOpen(false)}
         proof={currentRecord?.maintenance_complete_proof}
-        onReturnToActive={() =>
-          handleReturnToActive(currentRecord?.maintenance_scheduling_id)
-        }
       />
       <MaintenanceHistoryModal
         isOpen={isHistoryModalOpen}
