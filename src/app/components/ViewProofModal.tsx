@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 const ViewProofModal = ({ isOpen, onClose, proof }) => {
   const BASE_URL = "https://catranco.jwisnetwork.com/storage/";
@@ -21,7 +22,7 @@ const ViewProofModal = ({ isOpen, onClose, proof }) => {
     console.log("Rendering image with URL:", fullUrl);
 
     return (
-      <img
+      <Image
         src={fullUrl}
         alt={altText}
         className="w-full h-auto max-h-80 border border-gray-300 p-2 rounded object-contain"

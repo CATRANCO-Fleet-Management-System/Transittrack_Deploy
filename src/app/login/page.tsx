@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { login, getProfile } from "../services/authService";
+import Image from "next/image";
 
 export default function AuthPage() {
   const [formData, setFormData] = useState({
@@ -77,7 +78,7 @@ export default function AuthPage() {
     <section className="h-screen flex flex-row bg-white">
       {/* Left Side - Logo */}
       <div className="left w-1/2 h-full flex justify-center items-center">
-        <img
+        <Image
           src="/logo.png"
           alt="Logo"
           className="w-4/5 object-contain ml-20"

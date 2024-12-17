@@ -1,5 +1,6 @@
 import React from "react";
 import { FaBus } from "react-icons/fa";
+import Image from "next/image";
 
 const FuelViewDetailsModal = ({ selectedBus, viewData = {}, onClose = () => {} }) => {
   const {
@@ -85,7 +86,7 @@ const FuelViewDetailsModal = ({ selectedBus, viewData = {}, onClose = () => {} }
             <div className="mb-4">
               <label className="block font-medium">Odometer Proof</label>
               {odometer_distance_proof ? (
-                <img
+                <Image
                   src={`${BASE_URL}${odometer_distance_proof}`}
                   alt={`Odometer proof for Bus ${selectedBus}`}
                   className="max-h-48 w-auto border border-gray-300 p-2 rounded"
@@ -99,7 +100,7 @@ const FuelViewDetailsModal = ({ selectedBus, viewData = {}, onClose = () => {} }
             <div className="mb-4">
               <label className="block font-medium">Fuel Receipt Proof</label>
               {fuel_receipt_proof ? (
-                <img
+                <Image
                   src={`${BASE_URL}${fuel_receipt_proof}`}
                   alt={`Fuel receipt proof for Bus ${selectedBus}`}
                   className="max-h-48 w-auto border border-gray-300 p-2 rounded"

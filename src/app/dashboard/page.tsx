@@ -13,6 +13,7 @@ import Pusher from "pusher-js";
 import Echo from "laravel-echo";
 import MapComponent from "@/app/components/Map";
 
+
 interface BusData {
   number: string;
   name: string;

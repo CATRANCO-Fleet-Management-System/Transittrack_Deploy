@@ -3,6 +3,7 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import { FaArrowLeft, FaEnvelope, FaBell, FaPen } from "react-icons/fa";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Sidebar2() {
   const pathname = usePathname(); // Get the current path
@@ -29,7 +30,7 @@ export default function Sidebar2() {
         </div>
         <div className="img">
           <Link href="/dashboard">
-            <img
+            <Image
               src="/logo.png"
               alt="Image Logo"
               className="object-contain -mt-16 cursor-pointer"

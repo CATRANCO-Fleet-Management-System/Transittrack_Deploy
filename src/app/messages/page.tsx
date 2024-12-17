@@ -16,6 +16,7 @@ import {
   FaImage,
   FaPaperPlane,
 } from "react-icons/fa";
+import Image from "next/image";
 
 const Messages: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -150,7 +151,7 @@ const Messages: React.FC = () => {
                 </h2>
                 <div className="chat-content bg-gray-50 p-4 rounded h-96 overflow-y-scroll">
                   <div className="message flex items-start space-x-3 mb-4">
-                    <img
+                    <Image
                       src="/avatar.png"
                       alt="Avatar"
                       className="w-10 h-10 rounded-full"

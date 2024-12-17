@@ -12,6 +12,7 @@ import {
   FaMicrochip,
 } from "react-icons/fa";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -55,7 +56,7 @@ export default function Sidebar() {
     <section className="left w-full sm:w-1/5 flex flex-col h-screen bg-gray-100">
       <div className="header">
         <Link href="/dashboard">
-          <img
+          <Image
             src="/logo.png"
             alt="Image Logo"
             className="object-contain -mt-14 cursor-pointer"

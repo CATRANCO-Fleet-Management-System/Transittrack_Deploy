@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image"; // Import Image from next/image
 import LoadingSpinner from "./components/loadingAnimations";
 
 export default function LoadingPage() {
@@ -20,10 +21,13 @@ export default function LoadingPage() {
       <div className="text-center">
         {/* Logo */}
         <div className="-mt-20">
-          <img
+          <Image
             src="/logo.png" // Replace with your logo file path
             alt="Logo"
-            className="w-120 h-80 mx-auto"
+            width={480} // Specify width in pixels
+            height={320} // Specify height in pixels
+            className="mx-auto"
+            priority // Ensures the image is loaded immediately
           />
         </div>
 

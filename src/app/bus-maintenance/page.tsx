@@ -41,7 +41,7 @@ const MaintenanceManagement = () => {
       } else {
         response = await getAllCompletedMaintenanceScheduling();
       }
-      setRecords(Array.isArray(response.data) ? response.data : []); // Extract the `data` key
+ // Extract the `data` key
     } catch (error) {
       console.error("Error fetching records:", error);
       setRecords([]); // Fallback to an empty array
