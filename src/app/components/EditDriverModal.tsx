@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { updateProfile, getProfileById } from "@/app/services/userProfile";
+import Image from "next/image";
 
 const EditDriverModal = ({ isOpen, onClose, userProfileId, onSave }) => {
   const [birthday, setBirthday] = useState<string>(""); // State for birthday
@@ -155,7 +156,7 @@ const EditDriverModal = ({ isOpen, onClose, userProfileId, onSave }) => {
                   className="absolute inset-0 opacity-0 cursor-pointer"
                 />
                 {formData.user_profile_image ? (
-                  <img
+                  <Image
                     src={formData.user_profile_image}
                     alt="Profile Preview"
                     className="w-full h-full object-cover rounded-full"

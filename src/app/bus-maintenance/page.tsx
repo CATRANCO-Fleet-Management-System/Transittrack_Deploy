@@ -62,42 +62,41 @@ const MaintenanceManagement = () => {
       )
     : [];
 
-  const handleReturnToActive = async (id) => {
-    try {
-      const formData = new FormData();
+    const handleReturnToActive = async (id: number) => {
+      try {
+        const formData = new FormData();
+    
+        // Append proof file if available
+        if (currentRecord?.maintenance_complete_proof instanceof File) {
+          formData.append(
+            "maintenance_complete_proof",
+            currentRecord.maintenance_complete_proof
+          );
+        }
 
-      // Append proof file if available
-      if (currentRecord?.maintenance_complete_proof instanceof File) {
-        formData.append(
-          "maintenance_complete_proof",
-          currentRecord.maintenance_complete_proof
-        );
-      }
+     // Call the service function to update the maintenance status
+    const updatedRecord = await toggleMaintenanceSchedulingStatus(id, formData);
 
-      const updatedRecord = await toggleMaintenanceSchedulingStatus(
-        id,
-        formData
-      );
+    // Update the records in the state with the updated status
+    setRecords((prevRecords) =>
+      prevRecords.map((record) =>
+        record.maintenance_scheduling_id === id
+          ? {
+              ...record,
+              maintenance_status: updatedRecord.schedule.maintenance_status,
+            }
+          : record
+      )
+    );
 
-      setRecords((prev) =>
-        prev.map((record) =>
-          record.maintenance_scheduling_id === id
-            ? {
-                ...record,
-                maintenance_status: updatedRecord.schedule.maintenance_status,
-              }
-            : record
-        )
-      );
-
-      setIsViewProofModalOpen(false); // Close the modal after successful update
-    } catch (error) {
-      console.error(
-        "Error returning to active:",
-        error.response?.data || error
-      );
-    }
-  };
+    setIsViewProofModalOpen(false);
+  } catch (error) {
+    console.error(
+      "Error returning maintenance schedule to active:",
+      error.response?.data || error
+    );
+  }
+};
   // Function to open the history modal
   const handleOpenHistoryModal = () => {
     console.log("View History button clicked");
@@ -119,9 +118,9 @@ const MaintenanceManagement = () => {
     indexOfLastRecord
   );
 
-  const handlePageChange = (page) => setCurrentPage(page);
+  const handlePageChange = (page: any) => setCurrentPage(page);
 
-  const handleRemove = async (id) => {
+  const handleRemove = async (id: string) => {
     try {
       await deleteMaintenanceScheduling(id);
       fetchRecords();
@@ -130,7 +129,7 @@ const MaintenanceManagement = () => {
     }
   };
 
-  const handleSave = async (id, data) => {
+  const handleSave = async (id: string, data) => {
     try {
       if (id) {
         await updateMaintenanceScheduling(id, data);
