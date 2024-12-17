@@ -4,8 +4,8 @@ import Layout from "../components/Layout";
 import Header from "../components/Header";
 import MaintenanceAddModal from "../components/MaintenanceAddModal";
 import MaintenanceEditModal from "../components/MaintenanceEditModal";
-import CompletionProofModal from "../components/CompletionProofModal";
-import ViewProofModal from "../components/ViewProofModal";
+import CompletionProofModal from "../components/CompletionProofModal"; // Component for proof submission
+import ViewProofModal from "../components/ViewProofModal"; // Component for viewing proof
 import Pagination from "../components/Pagination";
 import { FaSearch, FaPlus, FaHistory } from "react-icons/fa";
 import {
@@ -19,30 +19,17 @@ import {
 
 import MaintenanceHistoryModal from "../components/MaintenanceHistoryModal";
 
-// Define the Record interface for type safety
-interface Record {
-  maintenance_scheduling_id: number;
-  vehicle_id: string;
-  maintenance_status: string;
-  maintenance_type: string;
-  maintenance_cost: number;
-  maintenance_date: string;
-  mechanic_company: string;
-  mechanic_company_address: string;
-  maintenance_complete_proof?: string | File;
-}
-
 const MaintenanceManagement = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isProofModalOpen, setIsProofModalOpen] = useState(false);
-  const [isViewProofModalOpen, setIsViewProofModalOpen] = useState(false);
-  const [currentRecord, setCurrentRecord] = useState<Record | null>(null);
-  const [records, setRecords] = useState<Record[]>([]);
+  const [isViewProofModalOpen, setIsViewProofModalOpen] = useState(false); // New state for viewing proof
+  const [currentRecord, setCurrentRecord] = useState(null);
+  const [records, setRecords] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
-  const [historyData, setHistoryData] = useState<Record[]>([]);
-  const [viewType, setViewType] = useState<"active" | "completed">("active");
+  const [historyData, setHistoryData] = useState([]);
+  const [viewType, setViewType] = useState("active"); // "active" or "completed"
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 3;
 
@@ -54,28 +41,32 @@ const MaintenanceManagement = () => {
       } else {
         response = await getAllCompletedMaintenanceScheduling();
       }
-      setRecords(response|| []);
+      setRecords(Array.isArray(response.data) ? response.data : []); // Extract the `data` key
     } catch (error) {
       console.error("Error fetching records:", error);
-      setRecords([]);
+      setRecords([]); // Fallback to an empty array
     }
   }, [viewType]);
 
   useEffect(() => {
-    fetchRecords();
+    fetchRecords(); // Fetch records when viewType changes
   }, [fetchRecords]);
 
-  const filteredRecords = records.filter((record: any) =>
-    Object.values(record)
-      .join(" ")
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+  // Filter records based on search term
+  const filteredRecords = Array.isArray(records)
+    ? records.filter((record) =>
+        Object.values(record)
+          .join(" ")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      )
+    : [];
 
-  const handleReturnToActive = async (id: number) => {
+  const handleReturnToActive = async (id) => {
     try {
       const formData = new FormData();
 
+      // Append proof file if available
       if (currentRecord?.maintenance_complete_proof instanceof File) {
         formData.append(
           "maintenance_complete_proof",
@@ -83,28 +74,54 @@ const MaintenanceManagement = () => {
         );
       }
 
-      const updatedRecord = (await toggleMaintenanceSchedulingStatus(
+      const updatedRecord = await toggleMaintenanceSchedulingStatus(
         id,
         formData
-      )) as { schedule: Partial<Record> };
+      );
 
-      setRecords((prevRecords) =>
-        prevRecords.map((record) =>
+      setRecords((prev) =>
+        prev.map((record) =>
           record.maintenance_scheduling_id === id
             ? {
                 ...record,
-                maintenance_status: updatedRecord.schedule.maintenance_status!,
+                maintenance_status: updatedRecord.schedule.maintenance_status,
               }
             : record
         )
       );
-      setIsViewProofModalOpen(false);
+
+      setIsViewProofModalOpen(false); // Close the modal after successful update
     } catch (error) {
-      console.error("Error returning maintenance schedule to active:", error);
+      console.error(
+        "Error returning to active:",
+        error.response?.data || error
+      );
     }
   };
+  // Function to open the history modal
+  const handleOpenHistoryModal = () => {
+    console.log("View History button clicked");
+    setIsHistoryModalOpen(true); // This will open the history modal
+  };
 
-  const handleRemove = async (id: number) => {
+  // Function to close the history modal
+  const handleCloseHistoryModal = () => {
+    console.log("Closing the history modal");
+    setIsHistoryModalOpen(false); // This will close the modal
+  };
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredRecords.length / recordsPerPage);
+  const indexOfLastRecord = currentPage * recordsPerPage;
+  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+  const currentRecords = filteredRecords.slice(
+    indexOfFirstRecord,
+    indexOfLastRecord
+  );
+
+  const handlePageChange = (page) => setCurrentPage(page);
+
+  const handleRemove = async (id) => {
     try {
       await deleteMaintenanceScheduling(id);
       fetchRecords();
@@ -113,14 +130,14 @@ const MaintenanceManagement = () => {
     }
   };
 
-  const handleSave = async (id: number | null, data: Record) => {
+  const handleSave = async (id, data) => {
     try {
       if (id) {
         await updateMaintenanceScheduling(id, data);
       } else {
         await createMaintenanceScheduling(data);
       }
-      fetchRecords();
+      fetchRecords(); // Refetch records after save
       setIsAddModalOpen(false);
       setIsEditModalOpen(false);
     } catch (error) {
@@ -128,21 +145,20 @@ const MaintenanceManagement = () => {
     }
   };
 
-  const handleProofSubmit = async (id: number, proofData: FormData) => {
+  const handleProofSubmit = async (id, proofData) => {
     try {
-      const updatedRecord = (await toggleMaintenanceSchedulingStatus(
+      const updatedRecord = await toggleMaintenanceSchedulingStatus(
         id,
         proofData
-      )) as { schedule: Partial<Record> };
-
-      setRecords((prevRecords) =>
-        prevRecords.map((record) =>
+      );
+      setRecords((prev) =>
+        prev.map((record) =>
           record.maintenance_scheduling_id === id
             ? {
                 ...record,
-                maintenance_status: updatedRecord.schedule.maintenance_status!,
+                maintenance_status: updatedRecord.schedule.maintenance_status,
                 maintenance_complete_proof:
-                  updatedRecord.schedule.maintenance_complete_proof!,
+                  updatedRecord.schedule.maintenance_complete_proof,
               }
             : record
         )
@@ -153,13 +169,10 @@ const MaintenanceManagement = () => {
     }
   };
 
-  const totalPages = Math.ceil(filteredRecords.length / recordsPerPage);
-  const indexOfLastRecord = currentPage * recordsPerPage;
-  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  const currentRecords = filteredRecords.slice(
-    indexOfFirstRecord,
-    indexOfLastRecord
-  );
+  const handleViewProof = (record) => {
+    setCurrentRecord(record);
+    setIsViewProofModalOpen(true); // Open proof modal
+  };
 
   return (
     <Layout>
