@@ -21,6 +21,7 @@ interface BusBoxProps {
   assignmentId: string | null;
   route?: string;
   onDelete: () => void;
+  onEdit: () => void;
   onUpdateBus: (updatedBus: any) => void;
   onUpdatePersonnel: (updatedPersonnel: any) => void;
 }
